@@ -467,6 +467,14 @@ void display_fastboot_menu_renew(struct select_msg_info *fastboot_msg_info)
 
 	display_fbcon_menu_message("FASTBOOT MODE\n", FBCON_RED_MSG, common_factor);
 
+	get_build_date((unsigned char *) msg_buf);
+	snprintf(msg, sizeof(msg), "BUILD_DATE - %s\n", msg_buf);
+	display_fbcon_menu_message(msg, FBCON_COMMON_MSG, common_factor);
+
+	get_build_id((unsigned char *) msg_buf);
+	snprintf(msg, sizeof(msg), "BUILD_ID - %s\n", msg_buf);
+	display_fbcon_menu_message(msg, FBCON_COMMON_MSG, common_factor);
+
 	get_product_name((unsigned char *) msg_buf);
 	snprintf(msg, sizeof(msg), "PRODUCT_NAME - %s\n", msg_buf);
 	display_fbcon_menu_message(msg, FBCON_COMMON_MSG, common_factor);

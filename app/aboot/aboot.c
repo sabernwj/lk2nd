@@ -5002,6 +5002,18 @@ void publish_getvar_multislot_vars()
 	return;
 }
 
+void get_build_date(unsigned char *buf)
+{
+	strcpy((char*)buf, BUILD_DATE);
+	return;
+}
+
+void get_build_id(unsigned char *buf)
+{
+	strcpy((char*)buf, BUILD_ID);
+	return;
+}
+
 void get_product_name(unsigned char *buf)
 {
 	snprintf((char*)buf, MAX_RSP_SIZE, "%s",  TARGET(BOARD));
