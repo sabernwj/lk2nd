@@ -16,11 +16,6 @@ DTBS += \
 	$(LOCAL_DIR)/msm8953-meizu-m1721.dtb \
 	$(LOCAL_DIR)/msm8953-motorola-potter.dtb
 endif
-ifeq ($(PROJECT), msm8952-secondary)
-DTBS += \
-	$(LOCAL_DIR)/msm8940-xiaomi-santoni.dtb \
-	$(LOCAL_DIR)/msm8940-xiaomi-ugg.dtb
-endif
 ifeq ($(PROJECT), msm8917-secondary)
 DTBS += \
 	$(LOCAL_DIR)/msm8917-samsung-r06.dtb \
@@ -29,4 +24,15 @@ endif
 ifeq ($(PROJECT), msm8937-secondary)
 DTBS += \
 	$(LOCAL_DIR)/msm8937-nokia-nd1.dtb
+endif
+
+ifeq ($(PROJECT), mi8937-secondary)
+DTBS += \
+	$(LOCAL_DIR)/msm8917-xiaomi-common.dtb \
+	$(LOCAL_DIR)/msm8917-xiaomi-riva.dtb \
+	$(LOCAL_DIR)/msm8917-xiaomi-ugglite.dtb \
+	$(LOCAL_DIR)/msm8937-xiaomi-land.dtb \
+	$(LOCAL_DIR)/msm8937-xiaomi-prada.dtb \
+	$(LOCAL_DIR)/msm8940-xiaomi-santoni.dtb \
+	$(LOCAL_DIR)/msm8940-xiaomi-ugg.dtb
 endif
