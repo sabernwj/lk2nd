@@ -96,10 +96,10 @@ struct partition_entry* partition_get_partition_entries()
 	return partition_entries;
 }
 
-void partition_split_boot(uint32_t block_size)
+void partition_split_boot(uint32_t block_size, bool part_recovery)
 {
 	struct partition_entry *boot;
-	int index = partition_get_index("boot");
+	int index = partition_get_index(part_recovery ? "recovery" : "boot");
 	unsigned long long lk_size = (1 * 1024 * 1024) / block_size;
 
 	if (index == INVALID_PTN) {
@@ -116,7 +116,7 @@ void partition_split_boot(uint32_t block_size)
 	if (partition_count < NUM_PARTITIONS) {
 		struct partition_entry *lk = &partition_entries[partition_count++];
 		memcpy(lk, boot, sizeof(*lk));
-		strcpy(lk->name, "lk2nd");
+		strcpy(lk->name, part_recovery ? "lk2nd-recovery" : "lk2nd");
 		lk->last_lba = lk->first_lba + lk_size - 1;
 		lk->size = lk_size;
 	} else {
@@ -160,7 +160,8 @@ unsigned int partition_read_table()
 	/* TODO: Move this to mmc_boot_read_gpt() */
 	partition_scan_for_multislot();
 
-	partition_split_boot(block_size);
+	partition_split_boot(block_size, false);
+	partition_split_boot(block_size, true);
 	return 0;
 }
 
