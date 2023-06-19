@@ -467,6 +467,21 @@ void display_fastboot_menu_renew(struct select_msg_info *fastboot_msg_info)
 
 	display_fbcon_menu_message("FASTBOOT MODE\n", FBCON_RED_MSG, common_factor);
 
+	switch (lk2nd_dev.aboot_mode) {
+		case ABOOT_MODE_UNKNOWN:
+			display_fbcon_menu_message("BOOTED FROM UNKNOWN MODE\n", FBCON_RED_MSG, common_factor);
+			break;
+		case ABOOT_MODE_NORMAL:
+			display_fbcon_menu_message("BOOTED FROM NORMAL MODE\n", FBCON_RED_MSG, common_factor);
+			break;
+		case ABOOT_MODE_CHARGER:
+			display_fbcon_menu_message("BOOTED FROM CHARGER MODE\n", FBCON_RED_MSG, common_factor);
+			break;
+		case ABOOT_MODE_RECOVERY:
+			display_fbcon_menu_message("BOOTED FROM RECOVERY MODE\n", FBCON_RED_MSG, common_factor);
+			break;
+	}
+
 	get_build_date((unsigned char *) msg_buf);
 	snprintf(msg, sizeof(msg), "BUILD_DATE - %s\n", msg_buf);
 	display_fbcon_menu_message(msg, FBCON_COMMON_MSG, common_factor);

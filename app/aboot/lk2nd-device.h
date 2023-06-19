@@ -5,6 +5,13 @@
 
 #include <dev_tree.h>
 
+enum aboot_modes {
+	ABOOT_MODE_UNKNOWN = 0,
+	ABOOT_MODE_NORMAL,
+	ABOOT_MODE_CHARGER,
+	ABOOT_MODE_RECOVERY,
+};
+
 struct lk2nd_panel {
 	const char *name;
 	const char *old_compatible;
@@ -29,6 +36,8 @@ struct lk2nd_device {
 	const char *mi8937_bootloader;
 	const char *mi8937_device;
 #endif
+
+	enum aboot_modes aboot_mode;
 
 	void *pstore;
 	unsigned int pstore_size;

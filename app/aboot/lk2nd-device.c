@@ -75,6 +75,25 @@ static inline void parse_arg(const char *str, const char *pre, const char **out)
 		*out = strdup(val);
 }
 
+static void parse_arg_aboot_mode(const char *str, const char *pre)
+{
+	const char *val = strpresuf(str, pre);
+
+	if (val == NULL) {
+		lk2nd_dev.aboot_mode = ABOOT_MODE_NORMAL;
+		return;
+	}
+
+	if (strncmp(val, "normal", strlen("normal")) == 0)
+		lk2nd_dev.aboot_mode = ABOOT_MODE_NORMAL;
+	else if (strncmp(val, "charger", strlen("charger")) == 0)
+		lk2nd_dev.aboot_mode = ABOOT_MODE_CHARGER;
+	else if (strncmp(val, "recovery", strlen("recovery")) == 0)
+		lk2nd_dev.aboot_mode = ABOOT_MODE_RECOVERY;
+	else
+		lk2nd_dev.aboot_mode = ABOOT_MODE_UNKNOWN;
+}
+
 static const char *parse_panel(const char *panel)
 {
 	const char *panel_name;
@@ -138,6 +157,7 @@ static void parse_boot_args(void)
 			parse_arg(aboot, "carrier=", &lk2nd_dev.carrier);
 			parse_arg(aboot, "radio=", &lk2nd_dev.radio);
 			parse_arg(aboot, "slot_suffix=", &lk2nd_dev.slot_suffix);
+			parse_arg_aboot_mode(aboot, "mode=");
 		} else {
 			parse_arg(arg, "mdss_mdp.panel=", &lk2nd_dev.panel.name);
 			parse_arg(arg, "board_id=", &lk2nd_dev.wt_board_id);
