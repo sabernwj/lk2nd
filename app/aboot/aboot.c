@@ -5271,10 +5271,17 @@ void aboot_init(const struct app_descriptor *app)
 	{
 		if (keys_get_state(KEY_HOME) || keys_get_state(KEY_VOLUMEUP))
 			boot_into_recovery = 1;
+#ifdef PROJECT_MOTO8937_SECONDARY
+		if ((!boot_into_recovery &&
+			keys_get_state(KEY_VOLUMEUP)) !=
+				lk2nd_dev.dev_mode)
+			boot_into_fastboot = true;
+#else
 		if ((!boot_into_recovery &&
 			(keys_get_state(KEY_BACK) || keys_get_state(KEY_VOLUMEDOWN))) !=
 				lk2nd_dev.dev_mode)
 			boot_into_fastboot = true;
+#endif
 	}
 	#if NO_KEYPAD_DRIVER
 	if (fastboot_trigger())
