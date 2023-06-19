@@ -33,6 +33,7 @@ struct lk2nd_device {
 	void *pstore;
 	unsigned int pstore_size;
 	bool dev_mode;
+	unsigned saved_reboot_reason;
 
 	struct lk2nd_panel panel;
 };

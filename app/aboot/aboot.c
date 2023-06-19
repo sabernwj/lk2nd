@@ -5297,6 +5297,8 @@ void aboot_init(const struct app_descriptor *app)
 #else
 	reboot_mode = check_reboot_mode();
 #endif
+	lk2nd_dev.saved_reboot_reason = reboot_mode;
+
 	if (reboot_mode == RECOVERY_MODE)
 	{
 		boot_into_recovery = 1;

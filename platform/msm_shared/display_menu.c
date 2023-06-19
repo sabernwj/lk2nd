@@ -40,6 +40,7 @@
 #include <smem.h>
 #include <target.h>
 #include <sys/types.h>
+#include <reboot.h>
 #include <../../../app/aboot/devinfo.h>
 #include <../../../app/aboot/recovery.h>
 #include <../../../app/aboot/lk2nd-device.h>
@@ -466,6 +467,44 @@ void display_fastboot_menu_renew(struct select_msg_info *fastboot_msg_info)
 		"press power key to select\n\n", FBCON_COMMON_MSG, common_factor);
 
 	display_fbcon_menu_message("FASTBOOT MODE\n", FBCON_RED_MSG, common_factor);
+
+	switch (lk2nd_dev.saved_reboot_reason) {
+		case REBOOT_MODE_UNKNOWN:
+			display_fbcon_menu_message("REBOOT MODE - UNKNOWN\n", FBCON_BLUE_MSG, common_factor);
+			break;
+		case RECOVERY_MODE:
+			display_fbcon_menu_message("REBOOT MODE - RECOVERY\n", FBCON_BLUE_MSG, common_factor);
+			break;
+		case FASTBOOT_MODE:
+			display_fbcon_menu_message("REBOOT MODE - FASTBOOT\n", FBCON_BLUE_MSG, common_factor);
+			break;
+		case ALARM_BOOT:
+			display_fbcon_menu_message("REBOOT MODE - ALARM_BOOT\n", FBCON_BLUE_MSG, common_factor);
+			break;
+#if ENABLE_VB_ATTEST
+		case DM_VERITY_EIO:
+			display_fbcon_menu_message("REBOOT MODE - DM_VERITY_EIO\n", FBCON_BLUE_MSG, common_factor);
+			break;
+#else
+		case DM_VERITY_LOGGING:
+			display_fbcon_menu_message("REBOOT MODE - DM_VERITY_LOGGING\n", FBCON_BLUE_MSG, common_factor);
+			break;
+#endif
+		case DM_VERITY_ENFORCING:
+			display_fbcon_menu_message("REBOOT MODE - DM_VERITY_ENFORCING\n", FBCON_BLUE_MSG, common_factor);
+			break;
+		case DM_VERITY_KEYSCLEAR:
+			display_fbcon_menu_message("REBOOT MODE - DM_VERITY_KEYSCLEAR\n", FBCON_BLUE_MSG, common_factor);
+			break;
+		case NORMAL_DLOAD:
+			display_fbcon_menu_message("REBOOT MODE - NORMAL_DLOAD\n", FBCON_BLUE_MSG, common_factor);
+			break;
+		case EMERGENCY_DLOAD:
+			display_fbcon_menu_message("REBOOT MODE - EMERGENCY_DLOAD\n", FBCON_BLUE_MSG, common_factor);
+			break;
+		default:
+			break;
+	}
 
 	get_build_date((unsigned char *) msg_buf);
 	snprintf(msg, sizeof(msg), "BUILD_DATE - %s\n", msg_buf);
