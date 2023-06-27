@@ -30,6 +30,10 @@ DISPLAY_USE_CONTINUOUS_SPLASH := 1
 # Add the project name to defines
 DEFINES += PROJECT_MOTO8937_SECONDARY=1
 
+# Add 1k of padding to the DTBs to allow for environment variables
+# to be runtime added by the bootloader (i.e. /chosen properties)
+DTC_FLAGS := -p 1024
+
 APPSBOOTHEADER: $(OUTBOOTIMG)
 ANDROID_BOOT_BASE := 0x80000000
 ANDROID_BOOT_CMDLINE := lk2nd
