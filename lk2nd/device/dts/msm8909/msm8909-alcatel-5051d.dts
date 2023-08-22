@@ -1,0 +1,18 @@
+// SPDX-License-Identifier: GPL-2.0-only
+
+/dts-v1/;
+
+#include <skeleton32.dtsi>
+#include <lk2nd.dtsi>
+
+/ {
+	// This is used by the bootloader to find the correct DTB
+	qcom,board-id = <8 0>;
+	qcom,msm-id =	<245 0>,
+			<258 0>,
+			<265 0>,
+			<275 0>;
+
+	model = "Alcatel OneTouch 5051D POP 4 Slate";
+	compatible = "alcatel,5051d", "qcom,msm8909", "lk2nd,device";
+};
