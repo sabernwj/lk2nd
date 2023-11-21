@@ -191,9 +191,7 @@ void target_sdc_init()
 	/* Set drive strength & pull ctrl values */
 	set_sdc_power_ctrl(config.slot);
 
-	dev = mmc_init(&config);
-	emmc_dev = dev;
-
+	emmc_dev = mmc_init(&config);
 	if (!emmc_dev) {
 		dprintf(CRITICAL, "FAILED TO INIT EMMC mmc_slot = %u \n",1);
 	}
@@ -211,18 +209,29 @@ void target_sdc_init()
 	set_sdc_power_ctrl(sd_config.slot);
 
 	sdcard_dev = mmc_init(&sd_config);
-
 	if (!sdcard_dev) {
 		dprintf(CRITICAL, "sdcard init failed!");
-	} else if (!dev) {
-		/* emmc failed but we still have sdcard */
-		dev = sdcard_dev;
 	}
 
 	if (!sdcard_dev && !emmc_dev) {
 		dprintf(CRITICAL, "BOTH SLOTS FAILED!");
 		ASSERT(0);
 	}
+
+	/* Use sdcard if it has boot partition */
+	if (sdcard_dev) {
+		dev = sdcard_dev;
+		if (partition_read_table() == 0) {
+			if (partition_get_index("boot") != INVALID_PTN) {
+				dprintf(CRITICAL, "Use sdcard\n");
+				return;
+			}
+		}
+	}
+
+	/* Fallback to eMMC */
+	dprintf(CRITICAL, "Use eMMC\n");
+	dev = emmc_dev;
 }
 
 void *target_mmc_device()
