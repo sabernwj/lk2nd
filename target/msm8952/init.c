@@ -438,6 +438,9 @@ void target_init(void)
 		shutdown_detect();
 #endif
 
+	if(target_is_pmi_enabled())
+		pm8x41_clear_pmic_watchdog();
+
 #if PON_VIB_SUPPORT
 	/* turn on vibrator to indicate that phone is booting up to end user */
 	if(target_is_pmi_enabled() || platform_is_qm215())
