@@ -28,6 +28,9 @@ DEFINES += DISPLAY_SPLASH_SCREEN=1
 # Use continuous splash from primary bootloader for display
 DISPLAY_USE_CONTINUOUS_SPLASH := 1
 
+# Allow to boot from sdcard
+DEFINES += USE_BOOTDEV_CMDLINE=1
+
 APPSBOOTHEADER: $(OUTBOOTIMG)
 ANDROID_BOOT_BASE := 0x80000000
 ANDROID_BOOT_CMDLINE := lk2nd
