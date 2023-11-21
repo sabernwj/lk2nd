@@ -33,17 +33,46 @@
 #include <boot_device.h>
 #include <qpic_nand.h>
 
-static uint32_t boot_device;
+static uint32_t boot_device = BOOT_EMMC;
 
 void platform_read_boot_config()
 {
+#if ENABLE_BOOT_CONFIG_SUPPORT
 	boot_device = BOOT_DEVICE_MASK(readl(BOOT_CONFIG_REG));
 	board_update_boot_dev(boot_device);
+#endif
 }
 
 uint32_t platform_get_boot_dev()
 {
 	return boot_device;
+}
+
+uint8_t platform_get_boot_dev_slot_num()
+{
+	uint32_t val = 0;
+	void *dev = target_mmc_device();
+	if (!dev)
+		return 0;
+
+	val = platform_get_boot_dev();
+	switch(platform_get_boot_dev())
+	{
+#if !USE_MDM_BOOT_CFG
+		case BOOT_DEFAULT:
+			return ((struct mmc_device *)dev)->config.slot;
+		case BOOT_UFS:
+		case BOOT_SD_ELSE_UFS:
+			break; // TODO
+#endif
+		case BOOT_EMMC:
+			return ((struct mmc_device *)dev)->config.slot;
+		default:
+			dprintf(CRITICAL,"ERROR: Unexpected boot_device val=%x",val);
+	}
+
+	// we should never reach here
+	return 0;
 }
 
 /*
