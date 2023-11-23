@@ -331,9 +331,22 @@ void target_sdc_init()
 	}
 }
 
+/* This returns the default boot device */
 void *target_mmc_device()
 {
 	return (void *) dev;
+}
+
+/* This returns eMMC device */
+void *target_mmc_device_emmc()
+{
+	return (void *) emmc_dev;
+}
+
+/* This returns sdcard device */
+void *target_mmc_device_sdcard()
+{
+	return (void *) sdcard_dev;
 }
 
 /* Return 1 if vol_up pressed */

@@ -107,6 +107,16 @@ __WEAK int target_is_emmc_boot(void)
 #endif
 }
 
+__WEAK void *target_mmc_device_emmc()
+{
+	return target_mmc_device();
+}
+
+__WEAK void *target_mmc_device_sdcard()
+{
+	return NULL;
+}
+
 __WEAK unsigned check_reboot_mode(void)
 {
     return 0;
