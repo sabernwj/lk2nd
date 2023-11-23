@@ -68,6 +68,23 @@ uint32_t platform_boot_dev_isemmc()
 	return boot_dev_type;
 }
 
+uint32_t platform_boot_dev_is_sdcard()
+{
+	struct mmc_device *dev;
+
+	if (!platform_boot_dev_isemmc())
+		return 0;
+
+	dev = target_mmc_device();
+	if (!dev)
+		return 0;
+
+	if (dev->config.slot == 2)
+		return 1;
+
+	return 0;
+}
+
 /*
  * Return 1 if boot from NAND else 0
  * For MDM : If the device is not Emmc,
