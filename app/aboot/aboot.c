@@ -5214,11 +5214,82 @@ void aboot_fastboot_register_commands(void)
 #endif
 }
 
+static int boot_slot = INVALID;
+
+void aboot_perform_normal_boot(void)
+{
+	int boot_err_type = 0;
+
+	if (target_is_emmc_boot())
+	{
+		if(! boot_into_recovery) {
+			/* Try to boot from first fs we can find */
+
+			ssize_t loaded_file = fsboot_boot_first(target_get_scratch_address(), target_get_max_flash_size());
+
+			if (loaded_file > 0) {
+				dprintf(INFO, "Booting boot.img from ext2 %x %x\n", target_get_scratch_address(), target_get_max_flash_size());
+				cmd_boot(NULL, target_get_scratch_address(), loaded_file);
+				goto fastboot;
+			}
+		}
+
+		if(emmc_recovery_init())
+			dprintf(ALWAYS,"error in emmc_recovery_init\n");
+		if(target_use_signed_kernel())
+		{
+			if((device.is_unlocked) || (device.is_tampered))
+			{
+			#ifdef TZ_TAMPER_FUSE
+				set_tamper_fuse_cmd(HLOS_IMG_TAMPER_FUSE);
+			#endif
+			#if USE_PCOM_SECBOOT
+				set_tamper_flag(device.is_tampered);
+			#endif
+			}
+		}
+
+retry_boot:
+		/* Trying to boot active partition */
+		if (partition_multislot_is_supported())
+		{
+			boot_slot = partition_find_boot_slot();
+			if (boot_slot == INVALID)
+				goto fastboot;
+		}
+
+		boot_err_type = boot_linux_from_mmc();
+		switch (boot_err_type)
+		{
+			case ERR_INVALID_PAGE_SIZE:
+			case ERR_DT_PARSE:
+			case ERR_ABOOT_ADDR_OVERLAP:
+			case ERR_INVALID_BOOT_MAGIC:
+			default:
+				break;
+			/* going to fastboot menu */
+		}
+	}
+	else
+	{
+		recovery_init();
+#if USE_PCOM_SECBOOT
+	if((device.is_unlocked) || (device.is_tampered))
+		set_tamper_flag(device.is_tampered);
+#endif
+		boot_linux_from_flash();
+	}
+
+/* This should be called "out", because nothing ensures the device would
+ * eventually go fastboot mode after it ends
+*/
+fastboot:
+	return;
+}
+
 void aboot_init(const struct app_descriptor *app)
 {
 	unsigned reboot_mode = 0;
-	int boot_err_type = 0;
-	int boot_slot = INVALID;
 
 	/* Initialise wdog to catch early lk crashes */
 #if WDOG_SUPPORT
@@ -5371,69 +5442,10 @@ void aboot_init(const struct app_descriptor *app)
 
 normal_boot:
 	if (!boot_into_fastboot)
-	{
-		if (target_is_emmc_boot())
-		{
-			if(! boot_into_recovery) {
-				/* Try to boot from first fs we can find */
+		aboot_perform_normal_boot();
 
-				ssize_t loaded_file = fsboot_boot_first(target_get_scratch_address(), target_get_max_flash_size());
-
-				if (loaded_file > 0) {
-					dprintf(INFO, "Booting boot.img from ext2 %x %x\n", target_get_scratch_address(), target_get_max_flash_size());
-					cmd_boot(NULL, target_get_scratch_address(), loaded_file);
-					goto fastboot;
-				}
-			}
-
-			if(emmc_recovery_init())
-				dprintf(ALWAYS,"error in emmc_recovery_init\n");
-			if(target_use_signed_kernel())
-			{
-				if((device.is_unlocked) || (device.is_tampered))
-				{
-				#ifdef TZ_TAMPER_FUSE
-					set_tamper_fuse_cmd(HLOS_IMG_TAMPER_FUSE);
-				#endif
-				#if USE_PCOM_SECBOOT
-					set_tamper_flag(device.is_tampered);
-				#endif
-				}
-			}
-
-retry_boot:
-			/* Trying to boot active partition */
-			if (partition_multislot_is_supported())
-			{
-				boot_slot = partition_find_boot_slot();
-				if (boot_slot == INVALID)
-					goto fastboot;
-			}
-
-			boot_err_type = boot_linux_from_mmc();
-			switch (boot_err_type)
-			{
-				case ERR_INVALID_PAGE_SIZE:
-				case ERR_DT_PARSE:
-				case ERR_ABOOT_ADDR_OVERLAP:
-				case ERR_INVALID_BOOT_MAGIC:
-				default:
-					break;
-				/* going to fastboot menu */
-			}
-		}
-		else
-		{
-			recovery_init();
-	#if USE_PCOM_SECBOOT
-		if((device.is_unlocked) || (device.is_tampered))
-			set_tamper_flag(device.is_tampered);
-	#endif
-			boot_linux_from_flash();
-		}
-		dprintf(CRITICAL, "ERROR: Could not do normal boot. Reverting "
-			"to fastboot mode.\n");
-	}
+	dprintf(CRITICAL, "ERROR: Could not do normal boot. Reverting "
+		"to fastboot mode.\n");
 
 fastboot:
 	/* We are here means regular boot did not happen. Start fastboot. */
