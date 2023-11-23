@@ -4514,11 +4514,8 @@ void cmd_flash(const char *arg, void *data, unsigned sz)
 		cmd_flash_nand(arg, data, sz);
 }
 
-void cmd_continue(const char *arg, void *data, unsigned sz)
+void continue_boot(void)
 {
-	fastboot_okay("");
-	fastboot_stop();
-
 	if (target_is_emmc_boot())
 	{
 #if FBCON_DISPLAY_MSG
@@ -4531,6 +4528,14 @@ void cmd_continue(const char *arg, void *data, unsigned sz)
 	{
 		boot_linux_from_flash();
 	}
+}
+
+void cmd_continue(const char *arg, void *data, unsigned sz)
+{
+	fastboot_okay("");
+	fastboot_stop();
+
+	continue_boot();
 }
 
 void cmd_reboot(const char *arg, void *data, unsigned sz)
