@@ -107,6 +107,16 @@ __WEAK int target_is_emmc_boot(void)
 #endif
 }
 
+__WEAK int target_can_change_mmc_device()
+{
+	return 0;
+}
+
+__WEAK int target_change_mmc_device()
+{
+	return 1;
+}
+
 __WEAK void *target_mmc_device_emmc()
 {
 	return target_mmc_device();
