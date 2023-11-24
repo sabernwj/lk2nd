@@ -246,7 +246,7 @@ static bool boot_into_ffbm;
 static char *target_boot_params = NULL;
 static bool boot_reason_alarm;
 static bool devinfo_present = true;
-bool boot_into_fastboot = false;
+bool boot_into_fastboot = true;
 static uint32_t dt_size = 0;
 static char *vbcmdline;
 static bootinfo info = {0};
